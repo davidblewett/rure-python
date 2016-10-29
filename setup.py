@@ -20,7 +20,7 @@ setup(
     long_description=README,
     license='MIT',
     keywords=['regex', 'rust', 'dfa', 'automata', 'data_structures'],
-    url='https://github.com/rust-lang-nursery/regex/tree/master/regex-capi',
+    url='https://github.com/davidblewett/rure-python',
     setup_requires=[
         'cffi>=1.7.0'],
     install_requires=['cffi>=1.7.0'],
