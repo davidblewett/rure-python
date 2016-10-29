@@ -2,7 +2,7 @@ import os
 import sys
 import warnings
 from collections import namedtuple
-import pdb; pdb.set_trace()  # NOQA
+
 from rure._ffi import ffi
 from rure import exceptions
 
