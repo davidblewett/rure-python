@@ -1,12 +1,17 @@
-language: python
-
-notifications:
-  email: false
+cache:
+  - cargo
+  - pip
 
 env:
   global:
     - RURE_DIR=/opt/regex/regex-capi
     - REGEX_TAG=0.1.80
+
+install:
+  - docker pull $DOCKER_IMAGE
+
+language: python
+
 matrix:
   include:
     - sudo: required
@@ -19,9 +24,9 @@ matrix:
       env: DOCKER_IMAGE=quay.io/davidblewett/manylinux_rure
            PRE_CMD=linux32
 
-install:
-  - docker pull $DOCKER_IMAGE
+notifications:
+  email: false
 
 script:
   - docker run --rm -v `pwd`:/io $DOCKER_IMAGE $PRE_CMD /io/travis/build-wheels.sh
-  - ls wheelhouse/
+  - ls /io/wheelhouse/
