@@ -8,6 +8,7 @@ from rust_setuptools import (build_rust_cmdclass, build_install_lib_cmdclass,
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(cur_dir, 'README.rst')) as buf:
     README = buf.read()
+rure_dir = os.getenv('RURE_DIR', cur_dir)
 
 setup(
     name='rure',
@@ -27,7 +28,7 @@ setup(
     cffi_modules=['rure/_build_ffi.py:ffi'],
     distclass=RustDistribution,
     cmdclass={
-        'build_rust': build_rust_cmdclass([(cur_dir, 'rure')]),
+        'build_rust': build_rust_cmdclass([(rure_dir, 'rure')]),
         'install_lib': build_install_lib_cmdclass()
         #'install_lib': install_lib_cmdclass()
     },

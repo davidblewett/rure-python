@@ -1,33 +1,31 @@
 #!/bin/bash
 set -e -x
 
-# Install latest stable Rust
-curl https://sh.rustup.rs -sSf | sh
+## Update Rust
 . /root/.cargo/env
+rustup update
 
-# Clone upstream repos
-git clone git://github.com/rust-lang-nursery/regex
-# Kick off cargo build of regex-capi (rure)
-cargo build --release --manifest-path ./regex/regex-capi/Cargo.toml
-# Stage build directory where setuptools expects
-ln -s ./regex/regex-capi/target ./rure/
+### Build rure
+## Clone upstream repos
+cd /opt/regex
+git pull
+git checkout "${REGEX_TAG}"
+## Kick off cargo build of regex-capi (rure)
+cargo build --release --manifest-path /opt/regex/regex-capi/Cargo.toml
 
-# Install a system package required by our library
-#yum install -y atlas-devel
-
-# Compile wheels
+## Compile wheels
 for PYBIN in /opt/python/*/bin; do
-    ${PYBIN}/pip install -r /io/dev-requirements.txt
-    ${PYBIN}/pip wheel /io/ -w wheelhouse/
+    #${PYBIN}/pip install -r /io/dev-requirements.txt
+    ${PYBIN}/pip wheel /io/ -w /io/wheelhouse/
 done
 
 # Bundle external shared libraries into the wheels
-for whl in wheelhouse/*.whl; do
+for whl in /io/wheelhouse/rure*.whl; do
     auditwheel repair $whl -w /io/wheelhouse/
 done
 
-# Install packages and test
+## Install packages and test
 for PYBIN in /opt/python/*/bin/; do
-    ${PYBIN}/pip install python-manylinux-demo --no-index -f /io/wheelhouse
-    (cd $HOME; ${PYBIN}/nosetests pymanylinuxdemo)
+    ${PYBIN}/pip install rure --no-index -f /io/wheelhouse
+    (cd $HOME; ${PYBIN}/nosetests rure)
 done
