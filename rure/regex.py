@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import re
 import warnings
 
@@ -94,7 +95,7 @@ class RegexObject(object):
         if isinstance(string, bytes):
             self._warn(u'match')
 
-        return self.search(ur'\A' + string, pos, endpos)
+        return self.search(r'\A' + string, pos, endpos)
 
     def split(self, string, maxsplit=0):
         if isinstance(string, bytes):
