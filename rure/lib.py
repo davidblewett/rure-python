@@ -5,6 +5,7 @@ from collections import namedtuple
 
 from rure._ffi import ffi
 from rure import exceptions
+from rure.decorators import accepts_bytes
 
 
 CASEI = 1 << 0
@@ -118,6 +119,7 @@ class Rure(object):
                       UnicodeWarning,
                       stacklevel=2)
 
+    @accepts_bytes
     def capture_name_index(self, name):
         """ Returns the capture index for the name given.
         If no such named capturing group exists in re, then -1 is returned.
@@ -127,9 +129,6 @@ class Rure(object):
         This function never returns 0 since the first capture group always
         corresponds to the entire match and is always unnamed.
         """
-        if not isinstance(name, bytes):
-            self._warn(u'capture_name_index')
-
         return _lib.rure_capture_name_index(self._ptr, name)
 
     def capture_names(self):
@@ -147,6 +146,7 @@ class Rure(object):
             else:
                 yield None
 
+    @accepts_bytes
     def is_match(self, haystack, start=0):
         """ Returns true if and only if the regex matches the string given.
 
@@ -154,9 +154,6 @@ class Rure(object):
         a match, since the underlying matching engine may be able to do less
         work.
         """
-        if not isinstance(haystack, bytes):
-            self._warn(u'is_match')
-
         return bool(_lib.rure_is_match(
             self._ptr,
             haystack,
@@ -164,6 +161,7 @@ class Rure(object):
             start
         ))
 
+    @accepts_bytes
     def find(self, haystack, start=0):
         """ Returns the start and end byte range of the leftmost-first match
         in text. If no match exists, then None is returned.
@@ -172,9 +170,6 @@ class Rure(object):
         of the match. Testing the existence of a match is faster if you use
         is_match.
         """
-        if not isinstance(haystack, bytes):
-            self._warn(u'find')
-
         match = ffi.new('rure_match *')
         if _lib.rure_find(
             self._ptr,
@@ -185,6 +180,7 @@ class Rure(object):
         ):
             return RureMatch(match.start, match.end)
 
+    @accepts_bytes
     def find_iter(self, haystack, start=0):
         """Returns the capture groups corresponding to the leftmost-first match
         in text. Capture group 0 always corresponds to the entire match.
@@ -194,9 +190,6 @@ class Rure(object):
         Otherwise, find is faster for discovering the location of the overall
         match.
         """
-        if not isinstance(haystack, bytes):
-            self._warn(u'find_iter')
-
         hlen = len(haystack)
         find_iter = ffi.gc(_lib.rure_iter_new(self._ptr),
                            _lib.rure_iter_free)
@@ -208,6 +201,7 @@ class Rure(object):
                                   match):
             yield RureMatch(match.start, match.end)
 
+    @accepts_bytes
     def captures(self, haystack, start=0):
         """Returns the capture groups corresponding to the leftmost-first match
         in text. Capture group 0 always corresponds to the entire match.
@@ -217,9 +211,6 @@ class Rure(object):
         Otherwise, find is faster for discovering the location of the overall
         match.
         """
-        if not isinstance(haystack, bytes):
-            self._warn(u'captures')
-
         hlen = len(haystack)
         captures = ffi.gc(_lib.rure_captures_new(self._ptr),
                           _lib.rure_captures_free)
@@ -237,14 +228,12 @@ class Rure(object):
                 if _lib.rure_captures_at(captures, i, match)
             ])
 
+    @accepts_bytes
     def captures_iter(self, haystack, start=0):
         """Returns an iterator over all the non-overlapping capture groups
         matched in text. This is operationally the same as find_iter,
         except it yields information about submatches.
         """
-        if not isinstance(haystack, bytes):
-            self._warn(u'captures_iter')
-
         hlen = len(haystack)
         captures = ffi.gc(_lib.rure_captures_new(self._ptr),
                           _lib.rure_captures_free)
@@ -261,15 +250,13 @@ class Rure(object):
                 if _lib.rure_captures_at(captures, i, match)
             ])
 
+    @accepts_bytes
     def shortest_match(self, haystack, start=0):
         """Returns end location if and only if re matches anywhere in
         text. The end location is the place at which the regex engine
         determined that a match exists, but may occur before the end of
         the proper leftmost-first match.
         """
-        if not isinstance(haystack, bytes):
-            self._warn(u'shortest_match')
-
         hlen = len(haystack)
         end = ffi.new('size_t *')
         if _lib.rure_shortest_match(self._ptr, haystack, hlen, start, end):
