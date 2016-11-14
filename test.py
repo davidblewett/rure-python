@@ -126,7 +126,7 @@ def test_iter():
 
     re = Rure("\\w+(\\w)")
 
-    match = re.find_iter(haystack).next()
+    match = next(re.find_iter(haystack))
     if not match:
         if DEBUG:
             print("[test_iter] expected first match, but got no match\n",
@@ -148,8 +148,8 @@ def test_iter():
     # find_iter and captures_iter use distinct iterators;
     # emulate by advancing captures an additional time
     c_iter = re.captures_iter(haystack)
-    c_iter.next()
-    captures = c_iter.next()
+    next(c_iter)
+    captures = next(c_iter)
     if not captures:
         if DEBUG:
             print("[test_iter] expected second match, but got no match\n",
@@ -191,7 +191,7 @@ def test_iter_capture_names():
     re = Rure("(?P<year>\\d{4})-(?P<month>\\d{2})-(?P<day>\\d{2})")
 
     cn_iter = re.capture_names()
-    result = cn_iter.next()
+    result = next(cn_iter)
     if result is not None:
         if DEBUG:
             print("[test_iter_capture_names] expected None for the first unnamed capture\n",
@@ -199,13 +199,13 @@ def test_iter_capture_names():
 
         passed = False
 
-    name = cn_iter.next()
+    name = next(cn_iter)
     passed = test_iter_capture_name("year", name)
 
-    name = cn_iter.next()
+    name = next(cn_iter)
     passed = test_iter_capture_name("month", name)
 
-    name = cn_iter.next()
+    name = next(cn_iter)
     passed = test_iter_capture_name("day", name)
 
     return passed
@@ -288,9 +288,9 @@ def test_compile_error_size_limit():
 
 def run_test(test_func):
     if test_func():
-        print("PASSED: %s" % test_func.func_name, file=sys.stderr)
+        print("PASSED: %s" % test_func.__name__, file=sys.stderr)
     else:
-        print("FAILED: %s" % test_func.func_name, file=sys.stderr)
+        print("FAILED: %s" % test_func.__name__, file=sys.stderr)
 
 
 if __name__ == "__main__":
