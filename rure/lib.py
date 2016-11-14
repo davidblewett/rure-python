@@ -41,13 +41,14 @@ def checked_call(fn, err, *args):
     all_args = list(args) + [err]
     res = fn(*all_args)
     msg = ffi.string(_lib.rure_error_message(err))
-    if msg == 'no error':
+    if msg == b'no error':
         return res
-    elif msg.startswith('Error parsing regex'):
+    elif msg.startswith(b'Error parsing regex'):
         raise exceptions.RegexSyntaxError(msg)
-    elif msg.startswith('Compiled regex exceeds size limit'):
+    elif msg.startswith(b'Compiled regex exceeds size limit'):
         raise exceptions.CompiledTooBigError(msg)
     else:
+        msg = bytes(msg, 'utf8')
         raise exceptions.RegexError(msg)
 
 
