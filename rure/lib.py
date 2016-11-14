@@ -75,10 +75,14 @@ class Rure(object):
         """ Compiles a regular expression. Once compiled, it can be used
         repeatedly to search, split or replace text in a string.
 
-        :param re:      Expression to compile
+        :param re:      Bytestring expression to compile
         :param flags:   Bitmask of flags
         :param kwargs:  Config options to pass (size_limit, dfa_size_limit)
         """
+        if not isinstance(re, bytes):
+            raise TypeError("'rure.lib.Rure' must be instantiated with a "
+                            "bytestring as first argument.")
+
         self._err = ffi.gc(_lib.rure_error_new(), _lib.rure_error_free)
         self._opts = ffi.gc(_lib.rure_options_new(), _lib.rure_options_free)
 
@@ -88,9 +92,6 @@ class Rure(object):
         if 'dfa_size_limit' in options:
             _lib.rure_options_dfa_size_limit(self._opts,
                                              options['dfa_size_limit'])
-
-        if not isinstance(re, bytes):
-            self._warn(u'__init__')
 
         if re:
             s = checked_call(
