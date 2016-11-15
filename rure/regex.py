@@ -4,7 +4,8 @@ import warnings
 
 from rure import Rure
 from rure import DEFAULT_FLAGS
-from rure import CASEI, MULTI, DOTNL, SWAP_GREED, SPACE, UNICODE
+from rure import CASEI, MULTI, DOTNL, SPACE, UNICODE
+from rure.decorators import accepts_string
 
 
 FLAG_MAP = {
@@ -26,14 +27,11 @@ FLAG_NAMES = {
 }
 
 
-U_WARN = u'Expect undefined behavior by not passing a Unicode string to {}.{}::{}'
-
-
 class RegexObject(object):
-
     def __init__(self, pattern, flags=0, **options):
         if isinstance(pattern, bytes):
-            self._warn(u'__init__')
+            raise TypeError("'rure.regex.RegexObject' must be instantiated with"
+                            " a unicode object as first argument.")
 
         self.flags = flags
         self.pattern = pattern.encode('utf8')
@@ -60,27 +58,16 @@ class RegexObject(object):
             if name is not None
         }
 
-    def _warn(self, mname):
-        warnings.warn(U_WARN.format(self.__class__.__module__,
-                                    self.__class__.__name__,
-                                    mname),
-                      UnicodeWarning,
-                      stacklevel=2)
-
     def capture_names(self):
         return self._rure.capture_names()
 
+    @accepts_string
     def is_match(self, string, pos=0, endpos=None):
-        if isinstance(string, bytes):
-            self._warn(u'is_match')
-
         haystack = string[:endpos].encode('utf8')
         return self._rure.is_match(haystack, pos)
 
+    @accepts_string
     def search(self, string, pos=0, endpos=None):
-        if isinstance(string, bytes):
-            self._warn(u'search')
-
         haystack = string[:endpos].encode('utf8')
         if self.submatches:
             captures = self._rure.captures(haystack, pos)
@@ -91,29 +78,21 @@ class RegexObject(object):
             if match:
                 return MatchObject(pos, endpos, self, haystack, None)
 
+    @accepts_string
     def match(self, string, pos=0, endpos=None):
-        if isinstance(string, bytes):
-            self._warn(u'match')
-
         return self.search(r'\A' + string, pos, endpos)
 
+    @accepts_string
     def split(self, string, maxsplit=0):
-        if isinstance(string, bytes):
-            self._warn(u'split')
-
         # Not supported by the C library yet
         raise NotImplementedError
 
+    @accepts_string
     def findall(self, string, pos=0, endpos=None):
-        if isinstance(string, bytes):
-            self._warn(u'findall')
-
         return [match for match in self.finditer(string, pos, endpos)]
 
+    @accepts_string
     def finditer(self, string, pos=0, endpos=None):
-        if isinstance(string, bytes):
-            self._warn(u'finditer')
-
         haystack = string[:endpos].encode('utf8')
         if self.submatches:
             captures = self._rure.captures(haystack, pos)
@@ -123,17 +102,13 @@ class RegexObject(object):
             for match in self._rure.find_iter(haystack, pos):
                 yield MatchObject(pos, endpos, self, haystack, None)
 
+    @accepts_string
     def sub(self, repl, string, count=0):
-        if isinstance(string, bytes):
-            self._warn(u'sub')
-
         # Not supported by the C library yet
         raise NotImplementedError
 
+    @accepts_string
     def subn(self, repl, string, count=0):
-        if isinstance(string, bytes):
-            self._warn(u'subn')
-
         # Not supported by the C library yet
         raise NotImplementedError
 

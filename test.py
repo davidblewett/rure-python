@@ -13,9 +13,9 @@ DEBUG = os.getenv('DEBUG', False)
 
 def test_is_match():
     passed = True
-    haystack = "snowman: \xE2\x98\x83"
+    haystack = b"snowman: \xE2\x98\x83"
 
-    re = Rure("\\p{So}$")
+    re = Rure(b"\\p{So}$")
     matched = re.is_match(haystack)
     if not matched:
         if DEBUG:
@@ -29,9 +29,9 @@ def test_is_match():
 
 def test_shortest_match():
     passed = True
-    haystack = "aaaaa"
+    haystack = b"aaaaa"
 
-    re = Rure("a+")
+    re = Rure(b"a+")
     end = re.shortest_match(haystack)
     if end is None:
         if DEBUG:
@@ -55,9 +55,9 @@ def test_shortest_match():
 
 def test_find():
     passed = True
-    haystack = "snowman: \xE2\x98\x83"
+    haystack = b"snowman: \xE2\x98\x83"
 
-    re = Rure("\\p{So}$")
+    re = Rure(b"\\p{So}$")
     match = re.find(haystack)
     if not match:
         if DEBUG:
@@ -82,9 +82,9 @@ def test_find():
 
 def test_captures():
     passed = True
-    haystack = "snowman: \xE2\x98\x83"
+    haystack = b"snowman: \xE2\x98\x83"
 
-    re = Rure(".(.*(?P<snowman>\\p{So}))$")
+    re = Rure(b".(.*(?P<snowman>\\p{So}))$")
     captures = re.captures(haystack)
     if not captures:
         if DEBUG:
@@ -94,7 +94,7 @@ def test_captures():
         passed = False
 
     expect_capture_index = 2
-    capture_index = re.capture_name_index("snowman")
+    capture_index = re.capture_name_index(b"snowman")
     if capture_index != expect_capture_index:
         if DEBUG:
             print("[test_captures] "
@@ -122,11 +122,11 @@ def test_captures():
 
 def test_iter():
     passed = True
-    haystack = "abc xyz"
+    haystack = b"abc xyz"
 
-    re = Rure("\\w+(\\w)")
+    re = Rure(b"\\w+(\\w)")
 
-    match = re.find_iter(haystack).next()
+    match = next(re.find_iter(haystack))
     if not match:
         if DEBUG:
             print("[test_iter] expected first match, but got no match\n",
@@ -148,8 +148,8 @@ def test_iter():
     # find_iter and captures_iter use distinct iterators;
     # emulate by advancing captures an additional time
     c_iter = re.captures_iter(haystack)
-    c_iter.next()
-    captures = c_iter.next()
+    next(c_iter)
+    captures = next(c_iter)
     if not captures:
         if DEBUG:
             print("[test_iter] expected second match, but got no match\n",
@@ -188,10 +188,10 @@ def test_iter_capture_name(expect, given):
 def test_iter_capture_names():
     passed = True
 
-    re = Rure("(?P<year>\\d{4})-(?P<month>\\d{2})-(?P<day>\\d{2})")
+    re = Rure(b"(?P<year>\\d{4})-(?P<month>\\d{2})-(?P<day>\\d{2})")
 
     cn_iter = re.capture_names()
-    result = cn_iter.next()
+    result = next(cn_iter)
     if result is not None:
         if DEBUG:
             print("[test_iter_capture_names] expected None for the first unnamed capture\n",
@@ -199,14 +199,14 @@ def test_iter_capture_names():
 
         passed = False
 
-    name = cn_iter.next()
-    passed = test_iter_capture_name("year", name)
+    name = next(cn_iter)
+    passed = test_iter_capture_name(b"year", name)
 
-    name = cn_iter.next()
-    passed = test_iter_capture_name("month", name)
+    name = next(cn_iter)
+    passed = test_iter_capture_name(b"month", name)
 
-    name = cn_iter.next()
-    passed = test_iter_capture_name("day", name)
+    name = next(cn_iter)
+    passed = test_iter_capture_name(b"day", name)
 
     return passed
 
@@ -217,7 +217,7 @@ def test_iter_capture_names():
 # (When Unicode mode is enabled, \xFF won't match .)
 def test_flags():
     passed = True
-    pattern = "."
+    pattern = b"."
     haystack = b"\xFF"
 
     re = Rure(pattern, flags=1)
@@ -244,7 +244,7 @@ def test_compile_error():
     #    passed = False
     #    rure_free(re)
     try:
-        re = Rure("(")
+        re = Rure(b"(")
         passed = False
     except RegexSyntaxError as err:
         if "Unclosed parenthesis" not in err.message:
@@ -271,7 +271,7 @@ def test_compile_error_size_limit():
     #    passed = False
     #    rure_free(re)
     try:
-        re = Rure("\\w{100}", size_limit=0)
+        re = Rure(b"\\w{100}", size_limit=0)
         passed = False
     except CompiledTooBigError as err:
         if "exceeds size" not in err.message:
@@ -288,9 +288,9 @@ def test_compile_error_size_limit():
 
 def run_test(test_func):
     if test_func():
-        print("PASSED: %s" % test_func.func_name, file=sys.stderr)
+        print("PASSED: %s" % test_func.__name__, file=sys.stderr)
     else:
-        print("FAILED: %s" % test_func.func_name, file=sys.stderr)
+        print("FAILED: %s" % test_func.__name__, file=sys.stderr)
 
 
 if __name__ == "__main__":
