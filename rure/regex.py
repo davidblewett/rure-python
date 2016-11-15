@@ -4,7 +4,7 @@ import warnings
 
 from rure import Rure
 from rure import DEFAULT_FLAGS
-from rure import CASEI, MULTI, DOTNL, SWAP_GREED, SPACE, UNICODE
+from rure import CASEI, MULTI, DOTNL, SPACE, UNICODE
 from rure.decorators import accepts_string
 
 
@@ -25,9 +25,6 @@ FLAG_NAMES = {
     re.UNICODE: 'UNICODE',
     re.VERBOSE: 'VERBOSE',
 }
-
-
-U_WARN = u'Expect undefined behavior by not passing a Unicode string to {}.{}::{}'
 
 
 class RegexObject(object):
@@ -60,13 +57,6 @@ class RegexObject(object):
             for pos, name in enumerate(names)
             if name is not None
         }
-
-    def _warn(self, mname):
-        warnings.warn(U_WARN.format(self.__class__.__module__,
-                                    self.__class__.__name__,
-                                    mname),
-                      UnicodeWarning,
-                      stacklevel=2)
 
     def capture_names(self):
         return self._rure.capture_names()

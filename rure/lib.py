@@ -53,9 +53,6 @@ def checked_call(fn, err, *args):
         raise exceptions.RegexError(msg)
 
 
-B_WARN = u'Rure expects UTF8 byte strings: {}.{}::{}'
-
-
 class Rure(object):
     """ A compiled regular expression for matching Unicode strings.
 
@@ -111,13 +108,6 @@ class Rure(object):
             [i if i else '' for i in self.capture_names()],
             rename=True
         )
-
-    def _warn(self, mname):
-        warnings.warn(B_WARN.format(self.__class__.__module__,
-                                    self.__class__.__name__,
-                                    mname),
-                      UnicodeWarning,
-                      stacklevel=2)
 
     @accepts_bytes
     def capture_name_index(self, name):
