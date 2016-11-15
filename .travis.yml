@@ -3,11 +3,6 @@ cache:
     - /root/.cache/pip
     - /root/.cargo
 
-env:
-  matrix:
-    - RURE_DIR=/opt/regex/regex-capi
-    - REGEX_TAG=0.1.80
-
 install:
   - docker pull $DOCKER_IMAGE
 
@@ -19,11 +14,15 @@ matrix:
       services:
         - docker
       env: DOCKER_IMAGE=quay.io/davidblewett/manylinux_rure
+           REGEX_TAG=0.1.80
+           RURE_DIR=/opt/regex/regex-capi
     - sudo: required
       services:
         - docker
       env: DOCKER_IMAGE=quay.io/davidblewett/manylinux_rure
            PRE_CMD=linux32
+           REGEX_TAG=0.1.80
+           RURE_DIR=/opt/regex/regex-capi
 
 notifications:
   email: false
