@@ -1,6 +1,7 @@
 cache:
-  - cargo
-  - pip
+  directories:
+    - /root/.cache/pip
+    - /root/.cargo
 
 env:
   global:
