@@ -4,7 +4,7 @@ cache:
     - /root/.cargo
 
 env:
-  global:
+  matrix:
     - RURE_DIR=/opt/regex/regex-capi
     - REGEX_TAG=0.1.80
 
