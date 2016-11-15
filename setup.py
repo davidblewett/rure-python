@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 from setuptools import setup
 
@@ -9,6 +10,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(cur_dir, 'README.rst')) as buf:
     README = buf.read()
 rure_dir = os.getenv('RURE_DIR', cur_dir)
+print('rure_dir:', rure_dir)
 
 setup(
     name='rure',
