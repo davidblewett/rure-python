@@ -1,6 +1,5 @@
 import os
 import sys
-import warnings
 from collections import namedtuple
 
 from rure._ffi import ffi
