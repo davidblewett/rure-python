@@ -4,7 +4,7 @@ from __future__ import print_function
 import unittest
 
 from rure.exceptions import CompiledTooBigError, RegexSyntaxError
-from rure.lib import Rure
+from rure.lib import CASEI, Rure
 
 
 class TestRure(unittest.TestCase):
@@ -112,8 +112,8 @@ class TestRure(unittest.TestCase):
         """
         pattern = b"."
         haystack = b"\xFF"
-        re = Rure(pattern, flags=1)
-        self.assertIsNotNone(re.is_match(haystack))
+        re = Rure(pattern, flags=CASEI)
+        self.assertTrue(re.is_match(haystack))
 
     def test_compile_error(self):
         try:
