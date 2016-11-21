@@ -72,3 +72,14 @@ implemented yet.
   in a single linear time search.
 * Splitting a string by a regex.
 * Replacing regex matches in a string with some other text.
+
+
+Install
+-------
+Binary wheels are provided for Linux. Installing from a source tarball requires
+manually building the Rust `rure` crate and pointing at the built directory:
+
+* git clone https://github.com/rust-lang-nursery/regex
+* cargo build --release --manifest-path /path/to/regex/regex-capi/Cargo.toml
+* RURE_DIR=/path/to/regex/regex-capi python setup.py bdist_wheel
+* pip install rure --no-index -f ./dist
