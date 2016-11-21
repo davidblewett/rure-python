@@ -25,8 +25,8 @@ setup(
     keywords=['regex', 'rust', 'dfa', 'automata', 'data_structures'],
     url='https://github.com/davidblewett/rure-python',
     setup_requires=[
-        'cffi>=1.7.0'],
-    install_requires=['cffi>=1.7.0'],
+        'cffi>=1.5.0'],
+    install_requires=['cffi>=1.5.0'],
     cffi_modules=['rure/_build_ffi.py:ffi'],
     distclass=RustDistribution,
     cmdclass={
