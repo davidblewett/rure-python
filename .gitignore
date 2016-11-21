@@ -1,0 +1,4 @@
+_ffi.py
+*.dylib
+*.dll
+*.so
