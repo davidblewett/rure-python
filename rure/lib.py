@@ -102,11 +102,6 @@ class Rure(object):
         else:
             s = _pointer
         self._ptr = ffi.gc(s, _lib.rure_free)
-        self.capture_cls = namedtuple(
-            'Captures',
-            [i if i else '' for i in self.capture_names()],
-            rename=True
-        )
 
     @accepts_bytes
     def capture_name_index(self, name):
@@ -211,11 +206,11 @@ class Rure(object):
             start,
             captures
         ):
-            return self.capture_cls(*[
+            return tuple(
                 RureMatch(match.start, match.end)
                 for i in range(0, _lib.rure_captures_len(captures))
                 if _lib.rure_captures_at(captures, i, match)
-            ])
+            )
 
     @accepts_bytes
     def captures_iter(self, haystack, start=0):
@@ -233,11 +228,11 @@ class Rure(object):
                                            haystack,
                                            hlen,
                                            captures):
-            yield self.capture_cls(*[
+            yield tuple(
                 RureMatch(match.start, match.end)
                 for i in range(0, _lib.rure_captures_len(captures))
                 if _lib.rure_captures_at(captures, i, match)
-            ])
+            )
 
     @accepts_bytes
     def shortest_match(self, haystack, start=0):
