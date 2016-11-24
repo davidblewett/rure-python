@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 import re
 import warnings
+from numbers import Integral
 
 from rure import Rure
 from rure import DEFAULT_FLAGS
@@ -76,7 +77,7 @@ class RegexObject(object):
         else:
             match = self._rure.find(haystack, pos)
             if match:
-                return MatchObject(pos, endpos, self, haystack, None)
+                return MatchObject(pos, endpos, self, haystack, 0)
 
     @accepts_string
     def match(self, string, pos=0, endpos=None):
@@ -95,12 +96,11 @@ class RegexObject(object):
     def finditer(self, string, pos=0, endpos=None):
         haystack = string[:endpos].encode('utf8')
         if self.submatches:
-            captures = self._rure.captures(haystack, pos)
             for captures in self._rure.captures_iter(haystack, pos):
                 yield MatchObject(pos, endpos, self, haystack, captures)
         else:
-            for match in self._rure.find_iter(haystack, pos):
-                yield MatchObject(pos, endpos, self, haystack, None)
+            for i, match in enumerate(self._rure.find_iter(haystack, pos)):
+                yield MatchObject(pos, endpos, self, haystack, i)
 
     @accepts_string
     def sub(self, repl, string, count=0):
@@ -164,8 +164,10 @@ class MatchObject(object):
 
     @property
     def captures(self):
-        if self._captures is None:
-            self._captures = self.re._rure.captures(self.string, self.pos)
+        if isinstance(self._captures, Integral):
+            all_captures = list(self.re._rure.captures_iter(self.string,
+                                                            self.pos))
+            self._captures = all_captures[self._captures]
         return self._captures
 
     def expand(self, template):
