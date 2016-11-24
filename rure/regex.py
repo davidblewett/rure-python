@@ -202,7 +202,7 @@ class MatchObject(object):
 
         capture_data = []
         for i in groups:
-            if isinstance(i, stringtypes):
+            if isinstance(i, string_types):
                 match = getattr(self.captures, i)
             else:
                 if i < 0:
