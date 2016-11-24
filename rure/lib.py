@@ -213,8 +213,8 @@ class Rure(object):
         ):
             return self.capture_cls(*[
                 RureMatch(match.start, match.end)
+                    if _lib.rure_captures_at(captures, i, match) else None
                 for i in range(0, _lib.rure_captures_len(captures))
-                if _lib.rure_captures_at(captures, i, match)
             ])
 
     @accepts_bytes
@@ -235,8 +235,8 @@ class Rure(object):
                                            captures):
             yield self.capture_cls(*[
                 RureMatch(match.start, match.end)
+                    if _lib.rure_captures_at(captures, i, match) else None
                 for i in range(0, _lib.rure_captures_len(captures))
-                if _lib.rure_captures_at(captures, i, match)
             ])
 
     @accepts_bytes
