@@ -89,7 +89,7 @@ class RegexObject(object):
 
     @accepts_string
     def findall(self, string, pos=0, endpos=None):
-        return [match for match in self.finditer(string, pos, endpos)]
+        return [match.groups() for match in self.finditer(string, pos, endpos)]
 
     @accepts_string
     def finditer(self, string, pos=0, endpos=None):
