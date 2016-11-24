@@ -29,6 +29,7 @@ FLAG_NAMES = {
 
 
 class RegexObject(object):
+
     def __init__(self, pattern, flags=0, **options):
         if isinstance(pattern, bytes):
             raise TypeError("'rure.regex.RegexObject' must be instantiated with"
@@ -36,6 +37,7 @@ class RegexObject(object):
 
         self.flags = flags
         self.pattern = pattern.encode('utf8')
+        self.options = options
         self.submatches = options.pop('submatches', False)
 
         self.rure_flags = DEFAULT_FLAGS
@@ -47,7 +49,8 @@ class RegexObject(object):
                 else:
                     self.rure_flags = self.rure_flags | rure_flag
 
-        self._rure = Rure(self.pattern, flags=self.rure_flags, **options)
+        self._rure = Rure(self.pattern, flags=self.rure_flags, **self.options)
+        self._match_rure = None
 
         names = [name for name in self.capture_names()]
         # This can be greater than len(self.groupindex) due to
@@ -81,7 +84,19 @@ class RegexObject(object):
 
     @accepts_string
     def match(self, string, pos=0, endpos=None):
-        return self.search(r'\A' + string, pos, endpos)
+        if self._match_rure is None:
+            self._match_rure = Rure(br'\A' + self.pattern,
+                                    flags=self.rure_flags,
+                                    **self.options)
+        haystack = string[:endpos].encode('utf8')
+        if self.submatches:
+            captures = self._match_rure.captures(haystack, pos)
+            if captures:
+                return MatchObject(pos, endpos, self, haystack, captures)
+        else:
+            match = self._match_rure.find(haystack, pos)
+            if match:
+                return MatchObject(pos, endpos, self, haystack, 0)
 
     @accepts_string
     def split(self, string, maxsplit=0):
