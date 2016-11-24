@@ -200,7 +200,10 @@ class MatchObject(object):
                     capture_data.append(data.decode('utf8'))
                 else:
                     capture_data.append(data)
-        return tuple(capture_data)
+        if len(groups) == 1:
+            return capture_data[0]
+        else:
+            return tuple(capture_data)
 
     def groups(self, default=None):
         # Exclude the entire match (index 0)
