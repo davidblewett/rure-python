@@ -27,5 +27,5 @@ done
 ## Install packages and test
 for PYBIN in /opt/python/*/bin/; do
     ${PYBIN}/pip install rure --no-index -f /io/wheelhouse
-    (cd $HOME; ${PYBIN}/nosetests rure)
+    (cd $HOME; ${PYBIN}/python -m unittest discover rure.tests)
 done

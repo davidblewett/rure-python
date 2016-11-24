@@ -35,7 +35,7 @@ setup(
         'install_lib': build_install_lib_cmdclass()
         #'install_lib': install_lib_cmdclass()
     },
-    packages=['rure'],
+    packages=['rure', 'rure.tests'],
     package_dir={'rure': 'rure'},
     zip_safe=False,
     classifiers=[
