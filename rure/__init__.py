@@ -1,4 +1,4 @@
-from re import LOCALE
+import re
 
 from rure.lib import Rure
 from rure.lib import DEFAULT_FLAGS
@@ -16,12 +16,12 @@ __all__ = [
 ]
 
 # Make flag constants from stdlib re available here.
-I = IGNORECASE = CASEI
-L = LOCALE
-U = UNICODE
-M = MULTILINE = MULTI
-S = DOTALL = DOTNL
-X = VERBOSE = SPACE
+I = IGNORECASE = re.I
+L = LOCALE = re.L
+U = re.U
+M = MULTILINE = re.M
+S = DOTALL = re.S
+X = VERBOSE = re.X
 
 
 def compile(pattern, flags=0, **options):
