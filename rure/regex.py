@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 import re
 import warnings
 from numbers import Integral
+from six import string_types
 
 from rure import Rure
 from rure import DEFAULT_FLAGS
@@ -201,7 +202,7 @@ class MatchObject(object):
 
         capture_data = []
         for i in groups:
-            if isinstance(i, basestring):
+            if isinstance(i, stringtypes):
                 match = getattr(self.captures, i)
             else:
                 if i < 0:

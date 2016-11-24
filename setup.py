@@ -27,7 +27,7 @@ setup(
     url='https://github.com/davidblewett/rure-python',
     setup_requires=[
         'cffi>=1.5.0'],
-    install_requires=['cffi>=1.5.0'],
+    install_requires=['cffi>=1.5.0', 'six'],
     cffi_modules=['rure/_build_ffi.py:ffi'],
     distclass=RustDistribution,
     cmdclass={
