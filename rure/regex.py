@@ -237,9 +237,11 @@ class MatchObject(object):
             gname = g_name_index[0]
             gval = group_data[pos]
             if decode:
-                gdict[gname.decode('utf8')] = gval.decode('utf8')
-            else:
-                gdict[gname] = gval
+                if isinstance(gname, bytes):
+                    gname = gname.decode('utf8')
+                if isinstance(gval, bytes):
+                    gval = gval.decode('utf8')
+            gdict[gname] = gval
         return gdict
 
     def start(self, group=0):

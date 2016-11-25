@@ -104,7 +104,7 @@ class Rure(object):
         self._ptr = ffi.gc(s, _lib.rure_free)
         self.capture_cls = namedtuple(
             'Captures',
-            [i if i else '' for i in self.capture_names()],
+            [i.decode('utf8') if i else u'' for i in self.capture_names()],
             rename=True
         )
 

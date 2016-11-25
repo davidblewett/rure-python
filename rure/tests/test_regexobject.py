@@ -53,5 +53,5 @@ class TestRegexObject(unittest.TestCase):
         self.assertIsNotNone(results)
         self.assertEqual(len(results.groups()),
                          len(stdlib_results.groups()))
-        self.assertItemsEqual(results.group(0),
-                              stdlib_results.group(0))
+        self.assertEqual(results.group(0),
+                         stdlib_results.group(0))
