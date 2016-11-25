@@ -1,3 +1,5 @@
+import re
+
 from rure.lib import Rure
 from rure.lib import DEFAULT_FLAGS
 from rure.lib import CASEI, MULTI, DOTNL, SWAP_GREED, SPACE, UNICODE
@@ -9,7 +11,17 @@ __all__ = [
     "compile", "search", "is_match", "match", "findall", "finditer",
     "DEFAULT_FLAGS",
     "CASEI", "MULTI", "DOTNL", "SWAP_GREED", "SPACE", "UNICODE",
+    "I", "IGNORECASE", "L", "LOCALE", "U", "M", "MULTILINE", "S",
+    "DOTALL", "X", "VERBOSE"
 ]
+
+# Make flag constants from stdlib re available here.
+I = IGNORECASE = re.I
+L = LOCALE = re.L
+U = re.U
+M = MULTILINE = re.M
+S = DOTALL = re.S
+X = VERBOSE = re.X
 
 
 def compile(pattern, flags=0, **options):
