@@ -15,7 +15,7 @@ print('rure_dir:', rure_dir)
 
 setup(
     name='rure',
-    version='0.1.1',
+    version='0.1.2',
     author='David Blewett',
     author_email='david@dawninglight.net',
     description=('Python bindings for the Rust `regex` create. '
