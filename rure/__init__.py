@@ -1,6 +1,6 @@
 import re
 
-from rure.lib import Rure
+from rure.lib import Rure, RureSet
 from rure.lib import DEFAULT_FLAGS
 from rure.lib import CASEI, MULTI, DOTNL, SWAP_GREED, SPACE, UNICODE
 from rure.regex import RegexObject
