@@ -10,18 +10,21 @@ from rust_setuptools import (build_rust_cmdclass, build_install_lib_cmdclass,
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(cur_dir, 'README.rst')) as buf:
     README = buf.read()
+with open(os.path.join(cur_dir, 'HISTORY.rst')) as buf:
+    HISTORY = buf.read()
+
 rure_dir = os.getenv('RURE_DIR', cur_dir)
 print('rure_dir:', rure_dir)
 
 setup(
     name='rure',
-    version='0.1.1',
+    version='0.1.2',
     author='David Blewett',
     author_email='david@dawninglight.net',
     description=('Python bindings for the Rust `regex` create. '
                  'This implementation uses finite automata and guarantees '
                  'linear time matching on all inputs.'),
-    long_description=README,
+    long_description=README + '\n\n' + HISTORY,
     license='MIT',
     keywords=['regex', 'rust', 'dfa', 'automata', 'data_structures'],
     url='https://github.com/davidblewett/rure-python',

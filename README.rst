@@ -76,10 +76,19 @@ implemented yet.
 
 Install
 -------
-Binary wheels are provided for Linux. Installing from a source tarball requires
-manually building the Rust `rure` crate and pointing at the built directory:
+Binary wheels are provided for Linux and MacOS. The specific versions of the Rust
+compiler, `rure` and `regex` crates will be available in the changelog.
+
+Installing from a source tarball requires manually building the Rust `rure` crate and
+pointing at the built directory. If you are wanting to take advantage of a modern CPU,
+it's likely that you'll want to build the `regex` crate with SSE3 and SIMD. To do so,
+you will need to update the `regex/regex-capi/Cargo.toml` to include the `simd-accel`
+feature: `regex = { version = "0.2.2", path = "..", features=["simd-accel"] }`.
 
 * git clone https://github.com/rust-lang-nursery/regex
-* cargo build --release --manifest-path /path/to/regex/regex-capi/Cargo.toml
-* RURE_DIR=/path/to/regex/regex-capi python setup.py bdist_wheel
-* pip install rure --no-index -f ./dist
+* `cargo build --release --manifest-path /path/to/regex/regex-capi/Cargo.toml`
+
+    * To build with SSE3: `RUSTFLAGS="-C target-feature=+ssse3" cargo build --release --features simd-accel`
+
+* `RURE_DIR=/path/to/regex/regex-capi python setup.py bdist_wheel`
+* `pip install rure --no-index -f ./dist`
