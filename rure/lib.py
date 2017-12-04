@@ -34,7 +34,7 @@ def find_library():
     return os.path.join(cur_dir, "{}{}.{}".format(prefix, libname, suffix))
 
 
-_lib = ffi.dlopen(find_library())
+_lib = ffi.dlopen(find_library(), ffi.RTLD_NODELETE)
 
 
 def checked_call(fn, err, *args):
