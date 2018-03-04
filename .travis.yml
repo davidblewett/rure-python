@@ -6,7 +6,7 @@ cache:
 env:
   global:
     - RURE_DIR=/opt/regex/regex-capi
-    - REGEX_TAG=0.1.80
+    - REGEX_TAG=0.2.1
 
 install:
   - docker pull $DOCKER_IMAGE

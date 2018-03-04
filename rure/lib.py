@@ -250,3 +250,88 @@ class Rure(object):
         end = ffi.new('size_t *')
         if _lib.rure_shortest_match(self._ptr, haystack, hlen, start, end):
             return end[0]
+
+
+class RureSet(object):
+    """ Match multiple (possibly overlapping) regular expressions in a single
+    scan.
+
+    A regex set corresponds to the union of two or more regular expressions.
+    That is, a regex set will match text where at least one of its constituent
+    regular expressions matches. A regex set as its formulated here provides a
+    touch more power: it will also report which regular expressions in the set
+    match. Indeed, this is the key difference between regex sets and a single
+    Regex with many alternates, since only one alternate can match at a time.
+    """
+    def __init__(self, res, flags=DEFAULT_FLAGS, **options):
+
+        """ Compiles a regular expression. Once compiled, it can be used
+        repeatedly to search, split or replace text in a string.
+
+        :param res:     List of Bytestring expressions to compile
+        :param flags:   Bitmask of flags
+        :param kwargs:  Config options to pass (size_limit, dfa_size_limit)
+        """
+
+        if not all(isinstance(re, bytes) for re in res):
+            raise TypeError("'rure.lib.RureSet' must be instantiated with a "
+                            "list of bytestrings as first argument.")
+
+        self._err = ffi.gc(_lib.rure_error_new(), _lib.rure_error_free)
+        self._opts = ffi.gc(_lib.rure_options_new(), _lib.rure_options_free)
+        self.options = options
+        if 'size_limit' in options:
+            _lib.rure_options_size_limit(self._opts, options['size_limit'])
+        if 'dfa_size_limit' in options:
+            _lib.rure_options_dfa_size_limit(self._opts,
+                                             options['dfa_size_limit'])
+
+        patterns = []
+        patterns_lengths = []
+        for re in res:
+            patterns.append(ffi.new("uint8_t []", re))
+            patterns_lengths.append(len(re))
+
+        s = checked_call(
+            _lib.rure_compile_set,
+            self._err,
+            ffi.new("uint8_t *[]", patterns),
+            ffi.new("size_t []", patterns_lengths),
+            len(patterns),
+            flags,
+            self._opts)
+        self._ptr = ffi.gc(s, _lib.rure_set_free)
+
+    def __len__(self):
+        return _lib.rure_set_len(self._ptr)
+
+    @accepts_bytes
+    def is_match(self, haystack, start=0):
+        """
+        Returns true if and only if one of the regexs matches the string
+        given.
+
+        It is recommended to use this method if all you need to do is test
+        a match, since the underlying matching engine may be able to do less
+        work.
+        """
+        return bool(_lib.rure_set_is_match(
+            self._ptr,
+            haystack,
+            len(haystack),
+            start
+        ))
+
+    @accepts_bytes
+    def matches(self, haystack, start=0):
+        """
+        Returns a list of booleans indicating whether the regex at each index
+        was matched in the string given
+        """
+        matches = ffi.new("bool[]", len(self))
+        _lib.rure_set_matches(self._ptr,
+                              haystack,
+                              len(haystack),
+                              start,
+                              matches)
+        return [bool(match) for match in matches]
