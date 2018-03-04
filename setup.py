@@ -18,10 +18,10 @@ print('rure_dir:', rure_dir)
 
 setup(
     name='rure',
-    version='0.1.2',
+    version='0.2.0',
     author='David Blewett',
     author_email='david@dawninglight.net',
-    description=('Python bindings for the Rust `regex` create. '
+    description=('Python bindings for the Rust `regex` crate. '
                  'This implementation uses finite automata and guarantees '
                  'linear time matching on all inputs.'),
     long_description=README + '\n\n' + HISTORY,
