@@ -263,16 +263,18 @@ class RureSet(object):
     match. Indeed, this is the key difference between regex sets and a single
     Regex with many alternates, since only one alternate can match at a time.
     """
-    def __init__(self, res, flags=DEFAULT_FLAGS, **options):
+    def __init__(self, *res, **options):
 
         """ Compiles a regular expression. Once compiled, it can be used
         repeatedly to search, split or replace text in a string.
 
         :param res:     List of Bytestring expressions to compile
-        :param flags:   Bitmask of flags
-        :param kwargs:  Config options to pass (size_limit, dfa_size_limit)
+        :param kwargs:  Config options to pass (flags bitmask,
+                                                size_limit,
+                                                dfa_size_limit)
         """
 
+        flags = options.pop('flags', DEFAULT_FLAGS)
         if not all(isinstance(re, bytes) for re in res):
             raise TypeError("'rure.lib.RureSet' must be instantiated with a "
                             "list of bytestrings as first argument.")
