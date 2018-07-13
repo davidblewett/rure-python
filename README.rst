@@ -86,7 +86,7 @@ feature: `regex = { version = "0.2.2", path = "..", features=["simd-accel"] }`.
 * git clone https://github.com/rust-lang-nursery/regex
 * `cargo build --release --manifest-path /path/to/regex/regex-capi/Cargo.toml`
 
-    * To build with SSE3: `RUSTFLAGS="-C target-feature=+ssse3" cargo build --release --features simd-accel`
+    * To build with SSE3: `RUSTFLAGS="-C target-feature=+ssse3" cargo build --release --features simd-accel` This is not needed after version 1.0.1 which enables SIMD optimizations automatically on Rust stable 1.27 or newer.
 
-* `RURE_DIR=/path/to/regex/regex-capi python setup.py bdist_wheel`
+* `RURE_DIR=/path/to/regex/ python setup.py bdist_wheel`
 * `pip install rure --no-index -f ./dist`
