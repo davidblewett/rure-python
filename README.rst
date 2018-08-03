@@ -74,7 +74,7 @@ implemented yet.
 
 Install
 -------
-Binary wheels are provided for Linux and MacOS. The specific versions of the Rust
+Binary wheels are provided for MacOS. The specific versions of the Rust
 compiler, `rure` and `regex` crates will be available in the changelog.
 
 Installing from a source tarball requires manually building the Rust `rure` crate and
