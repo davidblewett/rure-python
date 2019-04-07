@@ -18,7 +18,7 @@
 #include <stdlib.h>
 
 #ifdef __cplusplus
-extern "C" {
+//extern "C" {
 #endif
 
 /*
@@ -591,7 +591,7 @@ const char *rure_escape_must(const char *pattern);
 void rure_cstring_free(char *s);
 
 #ifdef __cplusplus
-}
+//}
 #endif
 
 #endif
