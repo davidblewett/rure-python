@@ -2,6 +2,16 @@
 History
 =======
 
+0.2.1 (2019-04-07)
+------------------
+
+* Update build pipeline to support multiple Python versions
+* Binary wheels compiled against:
+
+    * Rust: 1.33.0
+    * regex: 1.0
+    * rure (regex-capi): 0.2.1
+
 0.2.0 (2018-03-04)
 ------------------
 
