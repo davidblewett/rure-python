@@ -9,10 +9,10 @@ cache:
     - /root/.cargo
 
 before_install:
-  - docker build -t davidblewett/rure-python .
+  - docker build -t davidblewett/rure-python:$TRAVIS_COMMIT .
 
 notifications:
   email: false
 
 script:
-  - docker run davidblewett/rure-python /bin/sh -c "python -m unittest discover -s /root/rure/tests"
+  - docker run davidblewett/rure-python:$TRAVIS_COMMIT /bin/sh -c "python -m unittest discover -s /root/rure/tests"
