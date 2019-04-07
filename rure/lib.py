@@ -2,7 +2,8 @@ import os
 import sys
 from collections import namedtuple
 
-from rure._ffi import ffi
+from rure._native import ffi
+from rure._native import lib as _lib
 from rure import exceptions
 from rure.decorators import accepts_bytes
 
@@ -17,24 +18,6 @@ DEFAULT_FLAGS = UNICODE
 
 
 RureMatch = namedtuple("RureMatch", ("start", "end"))
-
-
-def find_library():
-    libname = "rure"
-    if sys.platform == 'win32':
-        prefix = ''
-        suffix = 'dll'
-    elif sys.platform == 'darwin':
-        prefix = 'lib'
-        suffix = 'dylib'
-    else:
-        prefix = 'lib'
-        suffix = 'so'
-    cur_dir = os.path.dirname(__file__)
-    return os.path.join(cur_dir, "{}{}.{}".format(prefix, libname, suffix))
-
-
-_lib = ffi.dlopen(find_library(), ffi.RTLD_NODELETE)
 
 
 def checked_call(fn, err, *args):

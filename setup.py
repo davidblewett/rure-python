@@ -3,22 +3,33 @@ from __future__ import print_function
 import os
 from setuptools import setup
 
-from rust_setuptools import (build_rust_cmdclass, build_install_lib_cmdclass,
-                             RustDistribution)
-#from rust_setuptools import RustDistribution, install_lib_cmdclass
-
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(cur_dir, 'README.rst')) as buf:
     README = buf.read()
 with open(os.path.join(cur_dir, 'HISTORY.rst')) as buf:
     HISTORY = buf.read()
 
-rure_dir = os.getenv('RURE_DIR', cur_dir)
-print('rure_dir:', rure_dir)
+
+def build_native(spec):
+    # build regex-capi ( RuRE )
+    build = spec.add_external_build(
+        cmd=['cargo', 'build', '--release'],
+        path='./regex/regex-capi'
+    )
+
+    spec.add_cffi_module(
+        module_path='rure._native',
+        dylib=lambda: build.find_dylib('rure',
+                                       in_path='../../regex/target/release'),
+        header_filename=lambda: build.find_header('rure.h',
+                                                  in_path='include'),
+        rtld_flags=['NOW', 'NODELETE']
+    )
+
 
 setup(
     name='rure',
-    version='0.2.0',
+    version='0.2.1',
     author='David Blewett',
     author_email='david@dawninglight.net',
     description=('Python bindings for the Rust `regex` crate. '
@@ -28,16 +39,11 @@ setup(
     license='MIT',
     keywords=['regex', 'rust', 'dfa', 'automata', 'data_structures'],
     url='https://github.com/davidblewett/rure-python',
-    setup_requires=[
-        'cffi>=1.5.0'],
-    install_requires=['cffi>=1.5.0', 'six'],
-    cffi_modules=['rure/_build_ffi.py:ffi'],
-    distclass=RustDistribution,
-    cmdclass={
-        'build_rust': build_rust_cmdclass([(rure_dir, 'rure')]),
-        'install_lib': build_install_lib_cmdclass()
-        #'install_lib': install_lib_cmdclass()
-    },
+    setup_requires=['milksnake'],
+    install_requires=['milksnake', 'cffi>=1.5.0', 'six'],
+    milksnake_tasks=[
+        build_native
+    ],
     packages=['rure', 'rure.tests'],
     package_dir={'rure': 'rure'},
     zip_safe=False,
