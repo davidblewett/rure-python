@@ -52,6 +52,7 @@ class RegexObject(object):
 
         self._rure = Rure(self.pattern, flags=self.rure_flags, **self.options)
         self._match_rure = None
+        self._match_rure_pos = None
 
         names = [name for name in self.capture_names()]
         # This can be greater than len(self.groupindex) due to
@@ -85,8 +86,13 @@ class RegexObject(object):
 
     @accepts_string
     def match(self, string, pos=0, endpos=None):
-        if self._match_rure is None:
-            self._match_rure = Rure(br'\A' + self.pattern,
+        if self._match_rure is None or pos != self._match_rure_pos:
+            self._match_rure_pos = pos
+            if pos > 0:
+                pattern = self.pattern
+            else:
+                pattern = br'\A' + self.pattern
+            self._match_rure = Rure(pattern,
                                     flags=self.rure_flags,
                                     **self.options)
         haystack = string[:endpos].encode('utf8')
