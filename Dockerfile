@@ -12,5 +12,4 @@ ENV CARGO_HOME=/usr/local/cargo \
 RUN rustc --version && \
     cargo --version
 
-RUN python setup.py bdist_wheel && \
-    pip install dist/*.whl
+RUN pip install -e .
