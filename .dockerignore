@@ -1,0 +1,4 @@
+/usr/local/rustup/toolchains/*/lib
+/usr/local/rustup/toolchains/*/share
+build/
+dist/

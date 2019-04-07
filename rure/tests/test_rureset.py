@@ -44,10 +44,10 @@ class TestRureSet(unittest.TestCase):
         try:
             RureSet(b"(")
         except RegexSyntaxError as err:
-            self.assertIn("Unclosed parenthesis", err.message)
+            self.assertIn("unclosed group", err.message.lower())
 
     def test_compile_error_size_limit(self):
         try:
             RureSet(b"\\w{100}", size_limit=0)
         except CompiledTooBigError as err:
-            self.assertIn("exceeds size", err.message)
+            self.assertIn("exceeds size", err.message.lower())

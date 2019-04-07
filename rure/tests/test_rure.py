@@ -119,7 +119,7 @@ class TestRure(unittest.TestCase):
         try:
             Rure(b"(")
         except RegexSyntaxError as err:
-            self.assertIn("Unclosed parenthesis", err.message)
+            self.assertIn("unclosed group", err.message.lower())
 
     def test_compile_error_size_limit(self):
         try:

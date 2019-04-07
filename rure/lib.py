@@ -2,7 +2,7 @@ import os
 import sys
 from collections import namedtuple
 
-from rure._ffi import ffi
+from . import _native
 from rure import exceptions
 from rure.decorators import accepts_bytes
 
@@ -19,36 +19,18 @@ DEFAULT_FLAGS = UNICODE
 RureMatch = namedtuple("RureMatch", ("start", "end"))
 
 
-def find_library():
-    libname = "rure"
-    if sys.platform == 'win32':
-        prefix = ''
-        suffix = 'dll'
-    elif sys.platform == 'darwin':
-        prefix = 'lib'
-        suffix = 'dylib'
-    else:
-        prefix = 'lib'
-        suffix = 'so'
-    cur_dir = os.path.dirname(__file__)
-    return os.path.join(cur_dir, "{}{}.{}".format(prefix, libname, suffix))
-
-
-_lib = ffi.dlopen(find_library(), ffi.RTLD_NODELETE)
-
-
 def checked_call(fn, err, *args):
     all_args = list(args) + [err]
     res = fn(*all_args)
-    msg = ffi.string(_lib.rure_error_message(err))
-    if msg == b'no error':
+    msg = _native.ffi.string(_native.lib.rure_error_message(err))
+    msg = msg.decode('utf8')
+    if msg == 'no error':
         return res
-    elif msg.startswith(b'Error parsing regex'):
+    elif msg.startswith(('Error parsing regex', 'regex parse error')):
         raise exceptions.RegexSyntaxError(msg)
-    elif msg.startswith(b'Compiled regex exceeds size limit'):
+    elif msg.startswith('Compiled regex exceeds size limit'):
         raise exceptions.CompiledTooBigError(msg)
     else:
-        msg = bytes(msg, 'utf8')
         raise exceptions.RegexError(msg)
 
 
@@ -80,19 +62,19 @@ class Rure(object):
             raise TypeError("'rure.lib.Rure' must be instantiated with a "
                             "bytestring as first argument.")
 
-        self._err = ffi.gc(_lib.rure_error_new(), _lib.rure_error_free)
-        self._opts = ffi.gc(_lib.rure_options_new(), _lib.rure_options_free)
+        self._err = _native.ffi.gc(_native.lib.rure_error_new(), _native.lib.rure_error_free)
+        self._opts = _native.ffi.gc(_native.lib.rure_options_new(), _native.lib.rure_options_free)
 
         self.options = options
         if 'size_limit' in options:
-            _lib.rure_options_size_limit(self._opts, options['size_limit'])
+            _native.lib.rure_options_size_limit(self._opts, options['size_limit'])
         if 'dfa_size_limit' in options:
-            _lib.rure_options_dfa_size_limit(self._opts,
+            _native.lib.rure_options_dfa_size_limit(self._opts,
                                              options['dfa_size_limit'])
 
         if re:
             s = checked_call(
-                _lib.rure_compile,
+                _native.lib.rure_compile,
                 self._err,
                 re,
                 len(re),
@@ -101,7 +83,7 @@ class Rure(object):
             )
         else:
             s = _pointer
-        self._ptr = ffi.gc(s, _lib.rure_free)
+        self._ptr = _native.ffi.gc(s, _native.lib.rure_free)
         self.capture_cls = namedtuple(
             'Captures',
             [i.decode('utf8') if i else u'' for i in self.capture_names()],
@@ -118,18 +100,18 @@ class Rure(object):
         This function never returns 0 since the first capture group always
         corresponds to the entire match and is always unnamed.
         """
-        return _lib.rure_capture_name_index(self._ptr, name)
+        return _native.lib.rure_capture_name_index(self._ptr, name)
 
     def capture_names(self):
         """ An iterator over the names of all possible captures.
         None indicates an unnamed capture; the first element (capture 0,
         the whole matched region) is always unnamed.
         """
-        cn_iter = ffi.gc(_lib.rure_iter_capture_names_new(self._ptr),
-                         _lib.rure_iter_capture_names_free)
-        ptr = ffi.new('char **')
-        while _lib.rure_iter_capture_names_next(cn_iter, ptr):
-            name = ffi.string(ptr[0])
+        cn_iter = _native.ffi.gc(_native.lib.rure_iter_capture_names_new(self._ptr),
+                         _native.lib.rure_iter_capture_names_free)
+        ptr = _native.ffi.new('char **')
+        while _native.lib.rure_iter_capture_names_next(cn_iter, ptr):
+            name = _native.ffi.string(ptr[0])
             if name:
                 yield name
             else:
@@ -143,7 +125,7 @@ class Rure(object):
         a match, since the underlying matching engine may be able to do less
         work.
         """
-        return bool(_lib.rure_is_match(
+        return bool(_native.lib.rure_is_match(
             self._ptr,
             haystack,
             len(haystack),
@@ -159,8 +141,8 @@ class Rure(object):
         of the match. Testing the existence of a match is faster if you use
         is_match.
         """
-        match = ffi.new('rure_match *')
-        if _lib.rure_find(
+        match = _native.ffi.new('rure_match *')
+        if _native.lib.rure_find(
             self._ptr,
             haystack,
             len(haystack),
@@ -180,11 +162,11 @@ class Rure(object):
         match.
         """
         hlen = len(haystack)
-        find_iter = ffi.gc(_lib.rure_iter_new(self._ptr),
-                           _lib.rure_iter_free)
+        find_iter = _native.ffi.gc(_native.lib.rure_iter_new(self._ptr),
+                           _native.lib.rure_iter_free)
 
-        match = ffi.new('rure_match *')
-        while _lib.rure_iter_next(find_iter,
+        match = _native.ffi.new('rure_match *')
+        while _native.lib.rure_iter_next(find_iter,
                                   haystack,
                                   hlen,
                                   match):
@@ -201,10 +183,10 @@ class Rure(object):
         match.
         """
         hlen = len(haystack)
-        captures = ffi.gc(_lib.rure_captures_new(self._ptr),
-                          _lib.rure_captures_free)
-        match = ffi.new('rure_match *')
-        if _lib.rure_find_captures(
+        captures = _native.ffi.gc(_native.lib.rure_captures_new(self._ptr),
+                          _native.lib.rure_captures_free)
+        match = _native.ffi.new('rure_match *')
+        if _native.lib.rure_find_captures(
             self._ptr,
             haystack,
             hlen,
@@ -213,8 +195,8 @@ class Rure(object):
         ):
             return self.capture_cls(*[
                 RureMatch(match.start, match.end)
-                    if _lib.rure_captures_at(captures, i, match) else None
-                for i in range(0, _lib.rure_captures_len(captures))
+                    if _native.lib.rure_captures_at(captures, i, match) else None
+                for i in range(0, _native.lib.rure_captures_len(captures))
             ])
 
     @accepts_bytes
@@ -224,19 +206,19 @@ class Rure(object):
         except it yields information about submatches.
         """
         hlen = len(haystack)
-        captures = ffi.gc(_lib.rure_captures_new(self._ptr),
-                          _lib.rure_captures_free)
-        captures_iter = ffi.gc(_lib.rure_iter_new(self._ptr),
-                               _lib.rure_iter_free)
-        match = ffi.new('rure_match *')
-        while _lib.rure_iter_next_captures(captures_iter,
+        captures = _native.ffi.gc(_native.lib.rure_captures_new(self._ptr),
+                          _native.lib.rure_captures_free)
+        captures_iter = _native.ffi.gc(_native.lib.rure_iter_new(self._ptr),
+                               _native.lib.rure_iter_free)
+        match = _native.ffi.new('rure_match *')
+        while _native.lib.rure_iter_next_captures(captures_iter,
                                            haystack,
                                            hlen,
                                            captures):
             yield self.capture_cls(*[
                 RureMatch(match.start, match.end)
-                    if _lib.rure_captures_at(captures, i, match) else None
-                for i in range(0, _lib.rure_captures_len(captures))
+                    if _native.lib.rure_captures_at(captures, i, match) else None
+                for i in range(0, _native.lib.rure_captures_len(captures))
             ])
 
     @accepts_bytes
@@ -247,8 +229,8 @@ class Rure(object):
         the proper leftmost-first match.
         """
         hlen = len(haystack)
-        end = ffi.new('size_t *')
-        if _lib.rure_shortest_match(self._ptr, haystack, hlen, start, end):
+        end = _native.ffi.new('size_t *')
+        if _native.lib.rure_shortest_match(self._ptr, haystack, hlen, start, end):
             return end[0]
 
 
@@ -279,33 +261,33 @@ class RureSet(object):
             raise TypeError("'rure.lib.RureSet' must be instantiated with a "
                             "list of bytestrings as first argument.")
 
-        self._err = ffi.gc(_lib.rure_error_new(), _lib.rure_error_free)
-        self._opts = ffi.gc(_lib.rure_options_new(), _lib.rure_options_free)
+        self._err = _native.ffi.gc(_native.lib.rure_error_new(), _native.lib.rure_error_free)
+        self._opts = _native.ffi.gc(_native.lib.rure_options_new(), _native.lib.rure_options_free)
         self.options = options
         if 'size_limit' in options:
-            _lib.rure_options_size_limit(self._opts, options['size_limit'])
+            _native.lib.rure_options_size_limit(self._opts, options['size_limit'])
         if 'dfa_size_limit' in options:
-            _lib.rure_options_dfa_size_limit(self._opts,
+            _native.lib.rure_options_dfa_size_limit(self._opts,
                                              options['dfa_size_limit'])
 
         patterns = []
         patterns_lengths = []
         for re in res:
-            patterns.append(ffi.new("uint8_t []", re))
+            patterns.append(_native.ffi.new("uint8_t []", re))
             patterns_lengths.append(len(re))
 
         s = checked_call(
-            _lib.rure_compile_set,
+            _native.lib.rure_compile_set,
             self._err,
-            ffi.new("uint8_t *[]", patterns),
-            ffi.new("size_t []", patterns_lengths),
+            _native.ffi.new("uint8_t *[]", patterns),
+            _native.ffi.new("size_t []", patterns_lengths),
             len(patterns),
             flags,
             self._opts)
-        self._ptr = ffi.gc(s, _lib.rure_set_free)
+        self._ptr = _native.ffi.gc(s, _native.lib.rure_set_free)
 
     def __len__(self):
-        return _lib.rure_set_len(self._ptr)
+        return _native.lib.rure_set_len(self._ptr)
 
     @accepts_bytes
     def is_match(self, haystack, start=0):
@@ -317,7 +299,7 @@ class RureSet(object):
         a match, since the underlying matching engine may be able to do less
         work.
         """
-        return bool(_lib.rure_set_is_match(
+        return bool(_native.lib.rure_set_is_match(
             self._ptr,
             haystack,
             len(haystack),
@@ -330,8 +312,8 @@ class RureSet(object):
         Returns a list of booleans indicating whether the regex at each index
         was matched in the string given
         """
-        matches = ffi.new("bool[]", len(self))
-        _lib.rure_set_matches(self._ptr,
+        matches = _native.ffi.new("bool[]", len(self))
+        _native.lib.rure_set_matches(self._ptr,
                               haystack,
                               len(haystack),
                               start,

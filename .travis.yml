@@ -1,33 +1,18 @@
+language: python
+
+services:
+  - docker
+
 cache:
   directories:
     - /root/.cache/pip
     - /root/.cargo
 
-env:
-  global:
-    - RURE_DIR=/opt/regex/regex-capi
-    - REGEX_TAG=0.2.1
-
-install:
-  - docker pull $DOCKER_IMAGE
-
-language: python
-
-matrix:
-  include:
-    - sudo: required
-      services:
-        - docker
-      env: DOCKER_IMAGE=quay.io/davidblewett/manylinux_rure
-    - sudo: required
-      services:
-        - docker
-      env: DOCKER_IMAGE=quay.io/davidblewett/manylinux_rure
-           PRE_CMD=linux32
+before_install:
+  - docker build -t davidblewett/rure-python:$TRAVIS_COMMIT .
 
 notifications:
   email: false
 
 script:
-  - docker run -e "RURE_DIR=$RURE_DIR" -e "REGEX_TAG=$REGEX_TAG" --rm -v `pwd`:/io $DOCKER_IMAGE $PRE_CMD /io/travis/build-wheels.sh
-  - ls /io/wheelhouse/
+  - docker run davidblewett/rure-python:$TRAVIS_COMMIT /bin/sh -c "python -m unittest discover -s /root/rure/tests"
