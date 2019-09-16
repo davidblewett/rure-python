@@ -29,7 +29,9 @@ The drop-in replacement should be as simple as ``import rure as re``,
 and using the API as documented in the Python documentation
 ( https://docs.python.org/3/library/re.html , https://docs.python.org/2/library/re.html).
 The flags supported by ``re`` are automatically translated to those
-supported by ``rure``.
+supported by ``rure``. Note that the ``rure`` engine is more strict than ``re``,
+and will reject expressions that contain unnecessary escapes, or use features not
+supported by the engine.
 
 One important note regarding this shim: the Rust engine operates on
 byte offsets in the given search text, while Python operates on Unicode
