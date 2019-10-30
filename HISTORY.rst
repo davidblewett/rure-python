@@ -2,6 +2,16 @@
 History
 =======
 
+0.2.2 (2019-10-30)
+------------------
+
+* Bugfix for empty string Rure error
+* Binary wheels compiled against:
+
+    * Rust: 1.33.0
+    * regex: 1.0
+    * rure (regex-capi): 0.2.1
+
 0.2.1 (2019-04-07)
 ------------------
 
