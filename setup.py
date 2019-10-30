@@ -29,7 +29,7 @@ def build_native(spec):
 
 setup(
     name='rure',
-    version='0.2.1',
+    version='0.2.2',
     author='David Blewett',
     author_email='david@dawninglight.net',
     description=('Python bindings for the Rust `regex` crate. '
