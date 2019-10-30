@@ -72,7 +72,7 @@ class Rure(object):
             _native.lib.rure_options_dfa_size_limit(self._opts,
                                              options['dfa_size_limit'])
 
-        if re:
+        if _pointer is None:
             s = checked_call(
                 _native.lib.rure_compile,
                 self._err,

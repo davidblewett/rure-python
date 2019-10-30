@@ -8,6 +8,11 @@ from rure.lib import CASEI, Rure
 
 
 class TestRure(unittest.TestCase):
+
+    def test_empty_string(self):
+        re = Rure(b"")
+        self.assertIsNotNone(re)
+
     def test_is_match(self):
         haystack = b"snowman: \xE2\x98\x83"
         re = Rure(b"\\p{So}$")
